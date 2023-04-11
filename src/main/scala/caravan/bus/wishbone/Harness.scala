@@ -6,7 +6,7 @@ import chisel3.stage.ChiselStage
 import chisel3.util.{Cat, Decoupled}
 import chisel3.util.experimental.loadMemoryFromFile
 
-class WishboneHarness/*(programFile: Option[String])*/(implicit val config: WishboneConfig) extends Module {
+class Harness/*(programFile: Option[String])*/(implicit val config: WishboneConfig) extends Module {
   val io = IO(new Bundle {
     val valid = Input(Bool())
     val addrReq = Input(UInt(config.addressWidth.W))
@@ -57,7 +57,7 @@ class SwitchHarness/*(programFile: Option[String])*/(implicit val config: Wishbo
     val validResp = Output(Bool())
     val dataResp = Output(UInt(32.W))
     val errResp = Output(Bool())
-    val ackResp = Output(Bool())
+    // val ackResp = Output(Bool())
   })
 
   implicit val request = new WBRequest()
@@ -71,8 +71,8 @@ class SwitchHarness/*(programFile: Option[String])*/(implicit val config: Wishbo
   val wbErr = Module(new WishboneErr())
 
   val addressMap = new AddressMap
-  addressMap.addDevice(Peripherals.DCCM, "h40000000".U(32.W), "h00000fff".U(32.W), dccmDev)
-  addressMap.addDevice(Peripherals.GPIO, "h40001000".U(32.W), "h00000fff".U(32.W), gpioDev)
+  addressMap.addDevice(0.U, "h40000000".U(32.W), "h00000fff".U(32.W), dccmDev)
+  addressMap.addDevice(1.U, "h40001000".U(32.W), "h00000fff".U(32.W), gpioDev)
   val devices = addressMap.getDevices
 
   val switch = Module(new Switch1toN[WBHost, WBDevice](new WishboneMaster(), new WishboneSlave(), devices.size))
@@ -244,5 +244,5 @@ object SwitchHarnessDriver extends App {
 
 object WishboneHarnessDriver extends App {
   implicit val config = WishboneConfig(addressWidth = 10, dataWidth = 32)
-  println((new ChiselStage).emitVerilog(new WishboneHarness(/*Some("/Users/mbp/Desktop/mem1.txt")*/)))
+  println((new ChiselStage).emitVerilog(new Harness(/*Some("/Users/mbp/Desktop/mem1.txt")*/)))
 }

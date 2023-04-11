@@ -7,7 +7,7 @@ import chisel3.util.{Cat, Decoupled, MuxLookup}
 import chisel3.util.experimental.loadMemoryFromFile
 
 
-class TilelinkHarness/*(programFile: Option[String])*/(implicit val config: TilelinkConfig) extends Module {
+class Harness/*(programFile: Option[String])*/(implicit val config: TilelinkConfig) extends Module {
   val io = IO(new Bundle {
     val valid = Input(Bool())
     val addrReq = Input(UInt(config.a.W))
@@ -51,7 +51,7 @@ class TilelinkHarness/*(programFile: Option[String])*/(implicit val config: Tile
 
 object TilelinkDriver extends App {
   implicit val config = TilelinkConfig()
-  (new ChiselStage).emitVerilog(new TilelinkHarness())
+  (new ChiselStage).emitVerilog(new Harness())
 }
 
 
